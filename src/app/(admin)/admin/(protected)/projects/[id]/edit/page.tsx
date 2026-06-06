@@ -48,7 +48,7 @@ export default async function AdminEditProjectPage({ params }: Props) {
               description: project.description,
               githubUrl: project.githubUrl ?? "",
               liveUrl: project.liveUrl ?? "",
-              githubRepositoryId: project.githubRepositoryId ?? undefined,
+              githubRepositoryId: project.githubRepositoryId ?? "",
               featured: project.featured,
               status: project.status,
               lifecycle: project.lifecycle,

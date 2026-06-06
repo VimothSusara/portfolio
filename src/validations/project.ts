@@ -45,3 +45,4 @@ export const projectFormSchema = z.object({
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
+export type ProjectFormInput = z.input<typeof projectFormSchema>;

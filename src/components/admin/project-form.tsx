@@ -22,9 +22,9 @@ import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { ProjectGalleryField } from "@/components/admin/project-gallery-field";
 import {
   projectFormSchema,
+  type ProjectFormInput,
   type ProjectFormValues,
 } from "@/validations/project";
-import type { z } from "zod";
 import type { Technology } from "@/generated/prisma/client";
 
 type ProjectFormProps = {
@@ -38,7 +38,7 @@ type ProjectFormProps = {
     stars: number;
     forks: number;
   }>;
-  defaultValues?: Partial<ProjectFormValues>;
+  defaultValues?: Partial<ProjectFormInput>;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -57,11 +57,7 @@ export function ProjectForm({
   const [isSaving, setIsSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
 
-  const form = useForm<
-    z.input<typeof projectFormSchema>,
-    unknown,
-    ProjectFormValues
-  >({
+  const form = useForm<ProjectFormInput, unknown, ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
       title: "",
@@ -70,7 +66,7 @@ export function ProjectForm({
       description: "",
       githubUrl: "",
       liveUrl: "",
-      githubRepositoryId: undefined,
+      githubRepositoryId: "",
       featured: false,
       status: "DRAFT",
       lifecycle: "PLANNING",
@@ -305,9 +301,9 @@ export function ProjectForm({
             control={control}
             render={({ field }) => (
               <Select
-                value={field.value ?? "none"}
+                value={field.value ? field.value : "none"}
                 onValueChange={(value) =>
-                  field.onChange(value === "none" ? null : value)
+                  field.onChange(value === "none" ? "" : value)
                 }
               >
                 <SelectTrigger id="githubRepositoryId" className="w-full">
