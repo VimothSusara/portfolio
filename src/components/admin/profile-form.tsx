@@ -15,6 +15,11 @@ import {
 } from "@/validations/profile";
 import { ResumeUploadField } from "@/components/admin/resume-upload-field";
 
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-sm text-destructive">{message}</p>;
+}
+
 export function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -38,6 +43,15 @@ export function ProfileForm() {
     },
   });
 
+  const {
+    register,
+    watch,
+    setValue,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -49,7 +63,7 @@ export function ProfileForm() {
         }
 
         if (data.profile) {
-          form.reset({
+          reset({
             fullName: data.profile.fullName ?? "",
             title: data.profile.title ?? "",
             shortBio: data.profile.shortBio ?? "",
@@ -75,7 +89,7 @@ export function ProfileForm() {
     }
 
     loadProfile();
-  }, [form]);
+  }, [reset]);
 
   async function onSubmit(values: ProfileFormValues) {
     setIsSaving(true);
@@ -108,81 +122,101 @@ export function ProfileForm() {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <form
+      onSubmit={handleSubmit(onSubmit, () => {
+        toast.error("Please fix the highlighted fields before saving.");
+      })}
+      className="space-y-8"
+    >
       <section className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="fullName">Full name</Label>
-          <Input id="fullName" {...form.register("fullName")} />
+          <Input id="fullName" aria-invalid={!!errors.fullName} {...register("fullName")} />
+          <FieldError message={errors.fullName?.message} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
-          <Input id="title" {...form.register("title")} />
+          <Input id="title" aria-invalid={!!errors.title} {...register("title")} />
+          <FieldError message={errors.title?.message} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" {...form.register("email")} />
+          <Input id="email" type="email" aria-invalid={!!errors.email} {...register("email")} />
+          <FieldError message={errors.email?.message} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="location">Location</Label>
-          <Input id="location" {...form.register("location")} />
+          <Input id="location" aria-invalid={!!errors.location} {...register("location")} />
+          <FieldError message={errors.location?.message} />
         </div>
       </section>
 
       <section className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="shortBio">Short bio</Label>
-          <Textarea id="shortBio" rows={3} {...form.register("shortBio")} />
+          <Textarea id="shortBio" rows={3} aria-invalid={!!errors.shortBio} {...register("shortBio")} />
+          <FieldError message={errors.shortBio?.message} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="longBio">Long bio</Label>
-          <Textarea id="longBio" rows={8} {...form.register("longBio")} />
+          <Textarea id="longBio" rows={8} aria-invalid={!!errors.longBio} {...register("longBio")} />
+          <FieldError message={errors.longBio?.message} />
         </div>
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <ImageUploadField
-          label="Avatar"
-          value={form.watch("avatarUrl")}
-          onChange={(url) =>
-            form.setValue("avatarUrl", url, { shouldDirty: true })
-          }
-        />
+        <div className="space-y-2">
+          <ImageUploadField
+            label="Avatar"
+            value={watch("avatarUrl")}
+            onChange={(url) => setValue("avatarUrl", url, { shouldDirty: true, shouldValidate: true })}
+          />
+          <FieldError message={errors.avatarUrl?.message} />
+        </div>
 
-        <ImageUploadField
-          label="Hero background"
-          value={form.watch("heroImageUrl")}
-          onChange={(url) =>
-            form.setValue("heroImageUrl", url, { shouldDirty: true })
-          }
-        />
+        <div className="space-y-2">
+          <ImageUploadField
+            label="Hero background"
+            value={watch("heroImageUrl")}
+            onChange={(url) =>
+              setValue("heroImageUrl", url, { shouldDirty: true, shouldValidate: true })
+            }
+          />
+          <FieldError message={errors.heroImageUrl?.message} />
+        </div>
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <ResumeUploadField
-          value={form.watch("resumeUrl")}
-          onChange={(url) =>
-            form.setValue("resumeUrl", url, { shouldDirty: true })
-          }
-        />
+        <div className="space-y-2">
+          <ResumeUploadField
+            value={watch("resumeUrl")}
+            onChange={(url) => setValue("resumeUrl", url, { shouldDirty: true, shouldValidate: true })}
+          />
+          <FieldError message={errors.resumeUrl?.message} />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="websiteUrl">Website</Label>
-          <Input id="websiteUrl" {...form.register("websiteUrl")} />
+          <Input id="websiteUrl" aria-invalid={!!errors.websiteUrl} {...register("websiteUrl")} />
+          <FieldError message={errors.websiteUrl?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="githubUrl">GitHub</Label>
-          <Input id="githubUrl" {...form.register("githubUrl")} />
+          <Input id="githubUrl" aria-invalid={!!errors.githubUrl} {...register("githubUrl")} />
+          <FieldError message={errors.githubUrl?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="linkedinUrl">LinkedIn</Label>
-          <Input id="linkedinUrl" {...form.register("linkedinUrl")} />
+          <Input id="linkedinUrl" aria-invalid={!!errors.linkedinUrl} {...register("linkedinUrl")} />
+          <FieldError message={errors.linkedinUrl?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="twitterUrl">Twitter / X</Label>
-          <Input id="twitterUrl" {...form.register("twitterUrl")} />
+          <Input id="twitterUrl" aria-invalid={!!errors.twitterUrl} {...register("twitterUrl")} />
+          <FieldError message={errors.twitterUrl?.message} />
         </div>
       </section>
 

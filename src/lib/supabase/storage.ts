@@ -82,6 +82,17 @@ export async function createPresignedUploadUrl(input: CreateUploadUrlInput) {
   };
 }
 
+export async function deleteStorageObject(storagePath: string) {
+  const supabase = createSupabaseAdminClient();
+  const bucket = getStorageBucket();
+
+  const { error } = await supabase.storage.from(bucket).remove([storagePath]);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
 // Backwards-compatible export for image uploads
 export const MAX_FILE_SIZE = FOLDER_CONFIG.profile.maxSize;
 export { ALLOWED_IMAGE_TYPES as ALLOWED_TYPES };

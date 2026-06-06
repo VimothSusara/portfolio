@@ -1,11 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FileText, Loader2, Upload } from "lucide-react";
+import { FileText, FolderOpen, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { MediaPickerDialog } from "@/components/admin/media-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { uploadAndRegisterMedia } from "@/lib/media/client-upload";
 
 const MAX_RESUME_SIZE = 10 * 1024 * 1024;
 
@@ -17,6 +19,7 @@ type ResumeUploadFieldProps = {
 export function ResumeUploadField({ value, onChange }: ResumeUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -35,37 +38,8 @@ export function ResumeUploadField({ value, onChange }: ResumeUploadFieldProps) {
     setIsUploading(true);
 
     try {
-      const presignResponse = await fetch("/api/admin/media/upload-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-file-size": String(file.size),
-        },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-          folder: "resumes",
-        }),
-      });
-
-      const presignData = await presignResponse.json();
-      if (!presignResponse.ok) {
-        throw new Error(presignData.error ?? "Failed to get upload URL");
-      }
-
-      const uploadResponse = await fetch(presignData.signedUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": file.type,
-        },
-        body: file,
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Upload failed");
-      }
-
-      onChange(presignData.publicUrl);
+      const media = await uploadAndRegisterMedia({ file, folder: "resumes" });
+      onChange(media.publicUrl);
       toast.success("Resume uploaded");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
@@ -116,6 +90,16 @@ export function ResumeUploadField({ value, onChange }: ResumeUploadFieldProps) {
           Upload PDF
         </Button>
 
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setPickerOpen(true)}
+        >
+          <FolderOpen className="size-4" />
+          Choose existing
+        </Button>
+
         {value && (
           <Button type="button" variant="ghost" size="sm" onClick={() => onChange("")}>
             Remove
@@ -135,6 +119,19 @@ export function ResumeUploadField({ value, onChange }: ResumeUploadFieldProps) {
         accept="application/pdf,.pdf"
         className="hidden"
         onChange={handleFileChange}
+      />
+
+      <MediaPickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        folder="resumes"
+        mimePrefix="application/pdf"
+        title="Choose resume"
+        description="Select a PDF already uploaded to your media library."
+        onSelect={(media) => {
+          onChange(media.publicUrl);
+          toast.success("Resume selected from library");
+        }}
       />
     </div>
   );

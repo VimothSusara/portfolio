@@ -1,4 +1,5 @@
 import type { Prisma } from "@/generated/prisma/client";
+import { registerMediaRecord } from "@/lib/media/register-media";
 import type { ProjectMediaInput } from "@/validations/project";
 
 function normalizeMediaInput(input: ProjectMediaInput) {
@@ -6,6 +7,13 @@ function normalizeMediaInput(input: ProjectMediaInput) {
     input.filename ?? input.publicUrl.split("/").pop()?.split("?")[0] ?? "image";
   const storagePath = input.storagePath ?? input.publicUrl;
   const mimeType = input.mimeType ?? "image/jpeg";
+  const folder = storagePath.startsWith("projects/")
+    ? "projects"
+    : storagePath.startsWith("profile/")
+      ? "profile"
+      : storagePath.startsWith("resumes/")
+        ? "resumes"
+        : "projects";
 
   return {
     filename,
@@ -13,6 +21,7 @@ function normalizeMediaInput(input: ProjectMediaInput) {
     mimeType,
     publicUrl: input.publicUrl,
     fileSize: input.fileSize ?? null,
+    folder: folder as "profile" | "projects" | "resumes",
   };
 }
 
@@ -23,16 +32,18 @@ export async function createMediaRecord(
 ) {
   const normalized = normalizeMediaInput(input);
 
-  return tx.media.create({
-    data: {
+  return registerMediaRecord(
+    tx,
+    {
       filename: normalized.filename,
       storagePath: normalized.storagePath,
       publicUrl: normalized.publicUrl,
       mimeType: normalized.mimeType,
-      fileSize: normalized.fileSize,
-      uploadedById,
+      fileSize: normalized.fileSize ?? undefined,
+      folder: normalized.folder,
     },
-  });
+    uploadedById,
+  );
 }
 
 export async function syncProjectMedia(
