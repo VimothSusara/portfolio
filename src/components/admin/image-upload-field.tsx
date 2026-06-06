@@ -2,11 +2,14 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { Loader2, Upload } from "lucide-react";
+import { FolderOpen, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { MediaPickerDialog } from "@/components/admin/media-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { uploadAndRegisterMedia } from "@/lib/media/client-upload";
+import type { UploadFolder } from "@/lib/supabase/storage";
 import type { ProjectMediaInput } from "@/validations/project";
 
 type ImageUploadFieldProps = {
@@ -14,7 +17,7 @@ type ImageUploadFieldProps = {
   value?: string;
   onChange: (url: string) => void;
   onUploadComplete?: (media: ProjectMediaInput) => void;
-  folder?: "profile" | "projects";
+  folder?: Extract<UploadFolder, "profile" | "projects">;
 };
 
 export function ImageUploadField({
@@ -26,6 +29,7 @@ export function ImageUploadField({
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -44,44 +48,9 @@ export function ImageUploadField({
     setIsUploading(true);
 
     try {
-      const presignResponse = await fetch("/api/admin/media/upload-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-file-size": String(file.size),
-        },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-          folder,
-        }),
-      });
-
-      const presignData = await presignResponse.json();
-      if (!presignResponse.ok) {
-        throw new Error(presignData.error ?? "Failed to get upload URL");
-      }
-
-      const uploadResponse = await fetch(presignData.signedUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": file.type,
-        },
-        body: file,
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Upload failed");
-      }
-
-      onChange(presignData.publicUrl);
-      onUploadComplete?.({
-        publicUrl: presignData.publicUrl,
-        storagePath: presignData.path,
-        filename: file.name,
-        mimeType: file.type,
-        fileSize: file.size,
-      });
+      const media = await uploadAndRegisterMedia({ file, folder });
+      onChange(media.publicUrl);
+      onUploadComplete?.(media);
       toast.success(`${label} uploaded`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
@@ -89,6 +58,12 @@ export function ImageUploadField({
       setIsUploading(false);
       if (inputRef.current) inputRef.current.value = "";
     }
+  }
+
+  function handleLibrarySelect(media: ProjectMediaInput) {
+    onChange(media.publicUrl);
+    onUploadComplete?.(media);
+    toast.success(`${label} selected from library`);
   }
 
   return (
@@ -121,6 +96,16 @@ export function ImageUploadField({
           Upload image
         </Button>
 
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setPickerOpen(true)}
+        >
+          <FolderOpen className="size-4" />
+          Choose existing
+        </Button>
+
         {value && (
           <Button type="button" variant="ghost" size="sm" onClick={() => onChange("")}>
             Remove
@@ -140,6 +125,15 @@ export function ImageUploadField({
         accept="image/*"
         className="hidden"
         onChange={handleFileChange}
+      />
+
+      <MediaPickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        folder={folder}
+        mimePrefix="image/"
+        title={`Choose ${label.toLowerCase()}`}
+        onSelect={handleLibrarySelect}
       />
     </div>
   );

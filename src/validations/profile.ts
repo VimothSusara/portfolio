@@ -3,9 +3,13 @@ import { z } from "zod";
 const optionalUrl = z
   .string()
   .trim()
-  .url("Must be a valid URL")
-  .optional()
-  .or(z.literal(""));
+  .refine(
+    (val) =>
+      val === "" ||
+      val.startsWith("/") ||
+      z.string().url().safeParse(val).success,
+    { message: "Must be a valid URL or site path" },
+  );
 
 export const profileFormSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
