@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectGithubStats } from "@/components/site/project-github-stats";
+import { TechnologyBadge } from "@/components/site/technology-icon";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { getPublishedProjects } from "@/lib/queries/projects";
 
 type Project = Awaited<ReturnType<typeof getPublishedProjects>>[number];
@@ -27,16 +27,11 @@ export function ProjectCard({ project }: { project: Project }) {
         </CardHeader>
         <CardContent className="space-y-3">
           {project.githubRepository && (
-            <ProjectGithubStats
-              repository={project.githubRepository}
-              compact
-            />
+            <ProjectGithubStats repository={project.githubRepository} compact />
           )}
           <div className="flex flex-wrap gap-2">
             {project.technologies.map(({ technology }) => (
-              <Badge key={technology.id} variant="secondary">
-                {technology.name}
-              </Badge>
+              <TechnologyBadge key={technology.id} technology={technology} />
             ))}
           </div>
         </CardContent>

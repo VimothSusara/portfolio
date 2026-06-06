@@ -20,12 +20,41 @@ const contactRatelimit =
       })
     : null;
 
+const loginRatelimit =
+  url && token
+    ? new Ratelimit({
+        redis: new Redis({ url, token }),
+        limiter: Ratelimit.slidingWindow(5, "15 m"),
+        prefix: "portfolio:login",
+      })
+    : null;
+
+export function getClientIp(headerStore: Headers) {
+  const forwarded = headerStore.get("x-forwarded-for");
+  return forwarded?.split(",")[0]?.trim() ?? "unknown";
+}
+
 export async function rateLimitContact(ip: string): Promise<RateLimitResult> {
   if (!contactRatelimit) {
     return { success: true, limit: 3, remaining: 3, reset: Date.now() };
   }
 
   const result = await contactRatelimit.limit(ip);
+
+  return {
+    success: result.success,
+    limit: result.limit,
+    remaining: result.remaining,
+    reset: result.reset,
+  };
+}
+
+export async function rateLimitLogin(ip: string): Promise<RateLimitResult> {
+  if (!loginRatelimit) {
+    return { success: true, limit: 5, remaining: 5, reset: Date.now() };
+  }
+
+  const result = await loginRatelimit.limit(ip);
 
   return {
     success: result.success,

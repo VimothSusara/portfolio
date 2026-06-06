@@ -133,6 +133,7 @@ model Technology {
   name       String   @unique
   slug       String   @unique
   iconName   String?
+  iconUrl    String?
   websiteUrl String?
   category   String?
   createdAt  DateTime @default(now())

@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/motion/fade-in";
 import { StaggerContainer, StaggerItem } from "@/components/motion/stagger";
 import { ProjectGithubStats } from "@/components/site/project-github-stats";
+import { TechnologyBadge } from "@/components/site/technology-icon";
 import type { getProjectBySlug } from "@/lib/queries/projects";
 
 type Project = NonNullable<Awaited<ReturnType<typeof getProjectBySlug>>>;
@@ -43,7 +43,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
 
       <FadeIn className="mt-6 flex flex-wrap gap-2" delay={0.05}>
         {project.technologies.map(({ technology }) => (
-          <Badge key={technology.id}>{technology.name}</Badge>
+          <TechnologyBadge key={technology.id} technology={technology} />
         ))}
       </FadeIn>
 
