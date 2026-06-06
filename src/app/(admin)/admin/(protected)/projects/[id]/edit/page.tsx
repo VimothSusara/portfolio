@@ -51,6 +51,23 @@ export default async function AdminEditProjectPage({ params }: Props) {
               type: project.type,
               sortOrder: project.sortOrder,
               technologyIds: project.technologies.map((t) => t.technologyId),
+              thumbnail: project.thumbnailImage
+                ? {
+                    publicUrl: project.thumbnailImage.publicUrl,
+                    storagePath: project.thumbnailImage.storagePath,
+                    filename: project.thumbnailImage.filename,
+                    mimeType: project.thumbnailImage.mimeType,
+                    fileSize: project.thumbnailImage.fileSize ?? undefined,
+                  }
+                : null,
+              gallery: project.images.map((image) => ({
+                publicUrl: image.media.publicUrl,
+                storagePath: image.media.storagePath,
+                filename: image.media.filename,
+                mimeType: image.media.mimeType,
+                fileSize: image.media.fileSize ?? undefined,
+                altText: image.altText ?? undefined,
+              })),
             }}
           />
         </CardContent>

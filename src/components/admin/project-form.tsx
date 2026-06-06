@@ -18,10 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { ProjectGalleryField } from "@/components/admin/project-gallery-field";
 import {
   projectFormSchema,
   type ProjectFormValues,
 } from "@/validations/project";
+import type { z } from "zod";
 import type { Technology } from "@/generated/prisma/client";
 
 type ProjectFormProps = {
@@ -46,7 +49,11 @@ export function ProjectForm({
   const [isSaving, setIsSaving] = useState(false);
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
 
-  const form = useForm<ProjectFormValues>({
+  const form = useForm<
+    z.input<typeof projectFormSchema>,
+    unknown,
+    ProjectFormValues
+  >({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
       title: "",
@@ -61,6 +68,8 @@ export function ProjectForm({
       type: "OTHER",
       sortOrder: 0,
       technologyIds: [],
+      thumbnail: null,
+      gallery: [],
       ...defaultValues,
     },
   });
@@ -77,6 +86,8 @@ export function ProjectForm({
 
   const title = watch("title");
   const selectedTechIds = watch("technologyIds");
+  const thumbnail = watch("thumbnail");
+  const gallery = watch("gallery");
 
   useEffect(() => {
     if (!slugTouched && title) {
@@ -276,6 +287,31 @@ export function ProjectForm({
             {...register("liveUrl")}
           />
           <FieldError message={errors.liveUrl?.message} />
+        </div>
+      </section>
+
+      <section className="grid gap-6 md:grid-cols-2">
+        <ImageUploadField
+          label="Thumbnail"
+          folder="projects"
+          value={thumbnail?.publicUrl ?? ""}
+          onChange={(url) => {
+            if (!url) {
+              setValue("thumbnail", null, { shouldDirty: true });
+              return;
+            }
+            setValue("thumbnail", { publicUrl: url }, { shouldDirty: true });
+          }}
+          onUploadComplete={(media) =>
+            setValue("thumbnail", media, { shouldDirty: true })
+          }
+        />
+
+        <div className="md:col-span-2">
+          <ProjectGalleryField
+            value={gallery ?? []}
+            onChange={(items) => setValue("gallery", items, { shouldDirty: true })}
+          />
         </div>
       </section>
 

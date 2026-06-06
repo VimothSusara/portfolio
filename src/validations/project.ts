@@ -7,6 +7,17 @@ const optionalUrl = z
     message: "Must be a valid URL",
   });
 
+export const projectMediaInputSchema = z.object({
+  publicUrl: z.string().url(),
+  storagePath: z.string().min(1).optional(),
+  filename: z.string().min(1).optional(),
+  mimeType: z.string().min(1).optional(),
+  fileSize: z.number().int().min(1).optional(),
+  altText: z.string().max(200).optional(),
+});
+
+export type ProjectMediaInput = z.infer<typeof projectMediaInputSchema>;
+
 export const projectFormSchema = z.object({
   title: z.string().trim().min(2).max(120),
   slug: z
@@ -25,6 +36,8 @@ export const projectFormSchema = z.object({
   type: z.enum(["WEBSITE", "APPLICATION", "GAME", "OTHER"]),
   sortOrder: z.number().int().min(0),
   technologyIds: z.array(z.string()),
+  thumbnail: projectMediaInputSchema.nullable().optional(),
+  gallery: z.array(projectMediaInputSchema),
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;

@@ -1,8 +1,20 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/get-admin-user";
+import { syncProjectMedia } from "@/lib/media/project-media";
 import { prisma } from "@/lib/prisma";
 import { projectFormSchema } from "@/validations/project";
+
+const projectInclude = {
+  technologies: {
+    include: { technology: true },
+  },
+  thumbnailImage: true,
+  images: {
+    orderBy: { sortOrder: "asc" as const },
+    include: { media: true },
+  },
+};
 
 function revalidateProjectPaths(slug?: string) {
   revalidatePath("/");
@@ -18,11 +30,7 @@ export async function GET() {
 
   const projects = await prisma.project.findMany({
     orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }],
-    include: {
-      technologies: {
-        include: { technology: true },
-      },
-    },
+    include: projectInclude,
   });
 
   return NextResponse.json({ projects });
@@ -48,29 +56,39 @@ export async function POST(request: Request) {
     const data = parsed.data;
     const isPublished = data.status === "PUBLISHED";
 
-    const project = await prisma.project.create({
-      data: {
-        title: data.title,
-        slug: data.slug,
-        shortDescription: data.shortDescription,
-        description: data.description,
-        githubUrl: data.githubUrl || null,
-        liveUrl: data.liveUrl || null,
-        featured: data.featured,
-        status: data.status,
-        lifecycle: data.lifecycle,
-        type: data.type,
-        sortOrder: data.sortOrder,
-        publishedAt: isPublished ? new Date() : null,
-        technologies: {
-          create: data.technologyIds.map((technologyId) => ({ technologyId })),
+    const project = await prisma.$transaction(async (tx) => {
+      const created = await tx.project.create({
+        data: {
+          title: data.title,
+          slug: data.slug,
+          shortDescription: data.shortDescription,
+          description: data.description,
+          githubUrl: data.githubUrl || null,
+          liveUrl: data.liveUrl || null,
+          featured: data.featured,
+          status: data.status,
+          lifecycle: data.lifecycle,
+          type: data.type,
+          sortOrder: data.sortOrder,
+          publishedAt: isPublished ? new Date() : null,
+          technologies: {
+            create: data.technologyIds.map((technologyId) => ({ technologyId })),
+          },
         },
-      },
-      include: {
-        technologies: {
-          include: { technology: true },
-        },
-      },
+      });
+
+      await syncProjectMedia(
+        tx,
+        created.id,
+        data.thumbnail,
+        data.gallery,
+        admin.id,
+      );
+
+      return tx.project.findUniqueOrThrow({
+        where: { id: created.id },
+        include: projectInclude,
+      });
     });
 
     if (isPublished) {

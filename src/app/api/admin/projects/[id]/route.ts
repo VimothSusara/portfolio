@@ -1,10 +1,22 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/get-admin-user";
+import { syncProjectMedia } from "@/lib/media/project-media";
 import { prisma } from "@/lib/prisma";
 import { projectFormSchema } from "@/validations/project";
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+const projectInclude = {
+  technologies: {
+    include: { technology: true },
+  },
+  thumbnailImage: true,
+  images: {
+    orderBy: { sortOrder: "asc" as const },
+    include: { media: true },
+  },
+};
 
 function revalidateProjectPaths(slug?: string) {
   revalidatePath("/");
@@ -22,11 +34,7 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const project = await prisma.project.findUnique({
     where: { id },
-    include: {
-      technologies: {
-        include: { technology: true },
-      },
-    },
+    include: projectInclude,
   });
 
   if (!project) {
@@ -64,32 +72,36 @@ export async function PATCH(request: Request, context: RouteContext) {
     const isPublished = data.status === "PUBLISHED";
     const wasPublished = existing.status === "PUBLISHED";
 
-    const project = await prisma.project.update({
-      where: { id },
-      data: {
-        title: data.title,
-        slug: data.slug,
-        shortDescription: data.shortDescription,
-        description: data.description,
-        githubUrl: data.githubUrl || null,
-        liveUrl: data.liveUrl || null,
-        featured: data.featured,
-        status: data.status,
-        lifecycle: data.lifecycle,
-        type: data.type,
-        sortOrder: data.sortOrder,
-        publishedAt:
-          isPublished && !existing.publishedAt ? new Date() : existing.publishedAt,
-        technologies: {
-          deleteMany: {},
-          create: data.technologyIds.map((technologyId) => ({ technologyId })),
+    const project = await prisma.$transaction(async (tx) => {
+      await tx.project.update({
+        where: { id },
+        data: {
+          title: data.title,
+          slug: data.slug,
+          shortDescription: data.shortDescription,
+          description: data.description,
+          githubUrl: data.githubUrl || null,
+          liveUrl: data.liveUrl || null,
+          featured: data.featured,
+          status: data.status,
+          lifecycle: data.lifecycle,
+          type: data.type,
+          sortOrder: data.sortOrder,
+          publishedAt:
+            isPublished && !existing.publishedAt ? new Date() : existing.publishedAt,
+          technologies: {
+            deleteMany: {},
+            create: data.technologyIds.map((technologyId) => ({ technologyId })),
+          },
         },
-      },
-      include: {
-        technologies: {
-          include: { technology: true },
-        },
-      },
+      });
+
+      await syncProjectMedia(tx, id, data.thumbnail, data.gallery, admin.id);
+
+      return tx.project.findUniqueOrThrow({
+        where: { id },
+        include: projectInclude,
+      });
     });
 
     revalidateProjectPaths(project.slug);

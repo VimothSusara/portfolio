@@ -1,24 +1,27 @@
 import { prisma } from "@/lib/prisma";
 
+const projectInclude = {
+  technologies: {
+    include: { technology: true },
+  },
+  thumbnailImage: true,
+  images: {
+    orderBy: { sortOrder: "asc" as const },
+    include: { media: true },
+  },
+};
+
 export async function getAdminProjects() {
   return prisma.project.findMany({
     orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }],
-    include: {
-      technologies: {
-        include: { technology: true },
-      },
-    },
+    include: projectInclude,
   });
 }
 
 export async function getAdminProjectById(id: string) {
   return prisma.project.findUnique({
     where: { id },
-    include: {
-      technologies: {
-        include: { technology: true },
-      },
-    },
+    include: projectInclude,
   });
 }
 
