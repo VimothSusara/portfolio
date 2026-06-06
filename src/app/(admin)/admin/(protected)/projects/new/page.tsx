@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ProjectForm } from "@/components/admin/project-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminTechnologies } from "@/lib/queries/admin-projects";
+import { getLinkableGithubRepositories } from "@/lib/queries/github-analytics";
 
 export const metadata: Metadata = {
   title: "New project",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminNewProjectPage() {
-  const technologies = await getAdminTechnologies();
+  const [technologies, githubRepositories] = await Promise.all([
+    getAdminTechnologies(),
+    getLinkableGithubRepositories(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -23,7 +27,11 @@ export default async function AdminNewProjectPage() {
           <CardTitle>Project details</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProjectForm mode="create" technologies={technologies} />
+          <ProjectForm
+            mode="create"
+            technologies={technologies}
+            githubRepositories={githubRepositories}
+          />
         </CardContent>
       </Card>
     </div>

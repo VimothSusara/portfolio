@@ -31,6 +31,13 @@ type ProjectFormProps = {
   mode: "create" | "edit";
   projectId?: string;
   technologies: Technology[];
+  githubRepositories?: Array<{
+    id: string;
+    ownerName: string;
+    repoName: string;
+    stars: number;
+    forks: number;
+  }>;
   defaultValues?: Partial<ProjectFormValues>;
 };
 
@@ -43,6 +50,7 @@ export function ProjectForm({
   mode,
   projectId,
   technologies,
+  githubRepositories = [],
   defaultValues,
 }: ProjectFormProps) {
   const router = useRouter();
@@ -62,6 +70,7 @@ export function ProjectForm({
       description: "",
       githubUrl: "",
       liveUrl: "",
+      githubRepositoryId: undefined,
       featured: false,
       status: "DRAFT",
       lifecycle: "PLANNING",
@@ -287,6 +296,40 @@ export function ProjectForm({
             {...register("liveUrl")}
           />
           <FieldError message={errors.liveUrl?.message} />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="githubRepositoryId">Linked GitHub repository</Label>
+          <Controller
+            name="githubRepositoryId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value ?? "none"}
+                onValueChange={(value) =>
+                  field.onChange(value === "none" ? null : value)
+                }
+              >
+                <SelectTrigger id="githubRepositoryId" className="w-full">
+                  <SelectValue placeholder="Select a synced repository" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {githubRepositories.map((repository) => (
+                    <SelectItem key={repository.id} value={repository.id}>
+                      {repository.ownerName}/{repository.repoName} ·{" "}
+                      {repository.stars.toLocaleString()} stars
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          <p className="text-xs text-muted-foreground">
+            Run a GitHub sync first to populate repositories. Linking shows live
+            repo stats on project cards.
+          </p>
+          <FieldError message={errors.githubRepositoryId?.message} />
         </div>
       </section>
 

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProjectForm } from "@/components/admin/project-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminProjectById, getAdminTechnologies } from "@/lib/queries/admin-projects";
+import { getLinkableGithubRepositories } from "@/lib/queries/github-analytics";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -15,9 +16,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function AdminEditProjectPage({ params }: Props) {
   const { id } = await params;
 
-  const [project, technologies] = await Promise.all([
+  const [project, technologies, githubRepositories] = await Promise.all([
     getAdminProjectById(id),
     getAdminTechnologies(),
+    getLinkableGithubRepositories(),
   ]);
 
   if (!project) notFound();
@@ -38,6 +40,7 @@ export default async function AdminEditProjectPage({ params }: Props) {
             mode="edit"
             projectId={project.id}
             technologies={technologies}
+            githubRepositories={githubRepositories}
             defaultValues={{
               title: project.title,
               slug: project.slug,
@@ -45,6 +48,7 @@ export default async function AdminEditProjectPage({ params }: Props) {
               description: project.description,
               githubUrl: project.githubUrl ?? "",
               liveUrl: project.liveUrl ?? "",
+              githubRepositoryId: project.githubRepositoryId ?? undefined,
               featured: project.featured,
               status: project.status,
               lifecycle: project.lifecycle,

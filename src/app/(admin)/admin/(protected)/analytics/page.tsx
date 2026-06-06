@@ -4,6 +4,8 @@ import { ExternalLink } from "lucide-react";
 import { GithubSyncButton } from "@/components/admin/github-sync-button";
 import { ContributionGraph } from "@/components/site/contribution-graph";
 import { GithubRepositoriesSection } from "@/components/site/github-repositories-section";
+import { GithubRepositoryHistoryCharts } from "@/components/site/github-repository-history-charts";
+import { LinkedProjectHistoryCharts } from "@/components/site/linked-project-history-charts";
 import { OrganizationActivitySection } from "@/components/site/organization-activity-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +22,9 @@ import {
   getGithubRepositoryCounts,
   getLastGithubSyncJob,
   getLatestOrganizationActivity,
+  getLinkedProjectRepositoryHistories,
   getOrganizationRepositories,
+  getRepositoryHistorySeries,
   parseContributionCalendar,
 } from "@/lib/queries/github-analytics";
 
@@ -43,11 +47,15 @@ export default async function AdminAnalyticsPage() {
     repoCounts,
     organizationActivity,
     organizationRepositories,
+    linkedProjectHistories,
+    repositoryHistory,
   ] = await Promise.all([
     getLastGithubSyncJob(),
     getGithubRepositoryCounts(username),
     getLatestOrganizationActivity(),
     getOrganizationRepositories(username),
+    getLinkedProjectRepositoryHistories(),
+    getRepositoryHistorySeries(5),
   ]);
 
   const calendar = parseContributionCalendar(cache);
@@ -180,6 +188,14 @@ export default async function AdminAnalyticsPage() {
           )}
         </CardContent>
       </Card>
+
+      {linkedProjectHistories.length > 0 && (
+        <LinkedProjectHistoryCharts histories={linkedProjectHistories} />
+      )}
+
+      {repositoryHistory.length > 0 && (
+        <GithubRepositoryHistoryCharts series={repositoryHistory} />
+      )}
 
       {organizationActivity.length > 0 && (
         <OrganizationActivitySection activities={organizationActivity} />

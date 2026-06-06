@@ -21,6 +21,16 @@ const publishedProjectInclude = {
     },
   },
   thumbnailImage: true,
+  githubRepository: {
+    select: {
+      id: true,
+      ownerName: true,
+      repoName: true,
+      stars: true,
+      forks: true,
+      openIssues: true,
+    },
+  },
 } satisfies Prisma.ProjectInclude;
 
 export async function getPublishedProjects() {

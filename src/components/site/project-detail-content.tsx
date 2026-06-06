@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/motion/fade-in";
 import { StaggerContainer, StaggerItem } from "@/components/motion/stagger";
+import { ProjectGithubStats } from "@/components/site/project-github-stats";
 import type { getProjectBySlug } from "@/lib/queries/projects";
 
 type Project = NonNullable<Awaited<ReturnType<typeof getProjectBySlug>>>;
@@ -45,6 +46,12 @@ export function ProjectDetailContent({ project }: { project: Project }) {
           <Badge key={technology.id}>{technology.name}</Badge>
         ))}
       </FadeIn>
+
+      {project.githubRepository && (
+        <FadeIn className="mt-4" delay={0.08}>
+          <ProjectGithubStats repository={project.githubRepository} />
+        </FadeIn>
+      )}
 
       {thumbnail && (
         <FadeIn className="relative mt-10 aspect-video overflow-hidden rounded-xl border" delay={0.1}>
