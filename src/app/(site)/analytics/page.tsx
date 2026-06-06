@@ -48,7 +48,7 @@ export default async function AnalyticsPage() {
         <p className="mt-2 text-muted-foreground">
           GitHub contribution activity
           {cache?.username ? ` for @${cache.username}` : ""}, including private
-          work attributed to your profile.
+          work attributed to my profile.
         </p>
       </FadeIn>
 
