@@ -2,15 +2,10 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { sendContactEmails } from "@/lib/email/contact";
-import { rateLimitContact } from "@/lib/rate-limit";
+import { getClientIp, rateLimitContact } from "@/lib/rate-limit";
 import { contactApiSchema } from "@/validations/contact";
 
 const PROFILE_ID = "default";
-
-function getClientIp(headerStore: Headers) {
-  const forwarded = headerStore.get("x-forwarded-for");
-  return forwarded?.split(",")[0]?.trim() ?? "unknown";
-}
 
 export async function POST(request: Request) {
   try {

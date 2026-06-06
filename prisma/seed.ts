@@ -52,15 +52,18 @@ async function main() {
 
   const technologies = await Promise.all(
     [
-      { name: "Next.js", category: "Framework", iconName: "nextjs" },
+      { name: "Next.js", category: "Framework", iconName: "nextdotjs" },
       { name: "TypeScript", category: "Language", iconName: "typescript" },
       { name: "PostgreSQL", category: "Database", iconName: "postgresql" },
       { name: "Prisma", category: "ORM", iconName: "prisma" },
-      { name: "Tailwind CSS", category: "Styling", iconName: "tailwind" },
+      { name: "Tailwind CSS", category: "Styling", iconName: "tailwindcss" },
     ].map((tech) =>
       prisma.technology.upsert({
         where: { slug: slugify(tech.name, { lower: true, strict: true }) },
-        update: {},
+        update: {
+          category: tech.category,
+          iconName: tech.iconName,
+        },
         create: {
           name: tech.name,
           slug: slugify(tech.name, { lower: true, strict: true }),

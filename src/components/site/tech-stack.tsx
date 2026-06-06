@@ -1,8 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import { FadeIn } from "@/components/motion/fade-in";
 import { StaggerContainer, StaggerItem } from "@/components/motion/stagger";
+import { TechnologyBadge } from "@/components/site/technology-icon";
 import type { getTechnologies } from "@/lib/queries/technologies";
 
 type Technology = Awaited<ReturnType<typeof getTechnologies>>[number];
@@ -29,11 +30,21 @@ export function TechStack({ technologies }: { technologies: Technology[] }) {
             <div className="rounded-xl border p-5 transition-shadow hover:shadow-sm">
               <h3 className="mb-3 font-medium">{category}</h3>
               <div className="flex flex-wrap gap-2">
-                {items.map((tech) => (
-                  <Badge key={tech.id} variant="outline">
-                    {tech.name}
-                  </Badge>
-                ))}
+                {items.map((tech) =>
+                  tech.websiteUrl ? (
+                    <Link
+                      key={tech.id}
+                      href={tech.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-opacity hover:opacity-80"
+                    >
+                      <TechnologyBadge technology={tech} />
+                    </Link>
+                  ) : (
+                    <TechnologyBadge key={tech.id} technology={tech} />
+                  ),
+                )}
               </div>
             </div>
           </StaggerItem>
