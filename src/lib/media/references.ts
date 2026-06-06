@@ -17,7 +17,7 @@ export function getMediaFolder(storagePath: string): UploadFolder | "other" {
 }
 
 export async function getMediaUsageSnapshot(): Promise<MediaUsageSnapshot> {
-  const [profile, thumbnailProjects, projectImages, blogCovers] =
+  const [profile, thumbnailProjects, projectImages, blogCovers, technologyIcons] =
     await Promise.all([
       prisma.profile.findUnique({
         where: { id: PROFILE_ID },
@@ -31,6 +31,10 @@ export async function getMediaUsageSnapshot(): Promise<MediaUsageSnapshot> {
       prisma.blogPost.findMany({
         where: { coverImageId: { not: null } },
         select: { coverImageId: true },
+      }),
+      prisma.technology.findMany({
+        where: { iconUrl: { not: null } },
+        select: { iconUrl: true },
       }),
     ]);
 
@@ -55,6 +59,10 @@ export async function getMediaUsageSnapshot(): Promise<MediaUsageSnapshot> {
 
   for (const post of blogCovers) {
     if (post.coverImageId) usedMediaIds.add(post.coverImageId);
+  }
+
+  for (const technology of technologyIcons) {
+    if (technology.iconUrl) usedPublicUrls.add(technology.iconUrl);
   }
 
   return { usedMediaIds, usedPublicUrls };

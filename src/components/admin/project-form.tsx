@@ -20,6 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { ProjectGalleryField } from "@/components/admin/project-gallery-field";
+import { TechnologyIcon } from "@/components/site/technology-icon";
 import {
   projectFormSchema,
   type ProjectFormInput,
@@ -368,6 +369,7 @@ export function ProjectForm({
                 checked={selectedTechIds.includes(tech.id)}
                 onCheckedChange={() => toggleTechnology(tech.id)}
               />
+              <TechnologyIcon technology={tech} size={18} />
               <span>{tech.name}</span>
             </label>
           ))}

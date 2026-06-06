@@ -1,11 +1,31 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
+import { getClientIp, rateLimitLogin } from "@/lib/rate-limit";
 import { loginSchema } from "@/validations/auth";
 
 export async function POST(request: Request) {
   try {
+    const headerStore = await headers();
+    const ip = getClientIp(headerStore);
+
+    const rateLimit = await rateLimitLogin(ip);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": String(rateLimit.limit),
+            "X-RateLimit-Remaining": String(rateLimit.remaining),
+            "X-RateLimit-Reset": String(rateLimit.reset),
+          },
+        },
+      );
+    }
+
     const body = await request.json();
     const parsed = loginSchema.safeParse(body);
 
