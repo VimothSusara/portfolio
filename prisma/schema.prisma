@@ -314,3 +314,11 @@ model BlogPost {
 
   @@index([published, publishedAt])
 }
+
+model GithubContributionCache {
+  id                 String   @id @default("default")
+  username           String
+  totalContributions Int
+  weeks              Json
+  updatedAt          DateTime @updatedAt
+}

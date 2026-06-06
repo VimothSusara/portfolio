@@ -7,11 +7,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { ProjectMediaInput } from "@/validations/project";
 
 type ImageUploadFieldProps = {
   label: string;
   value?: string;
   onChange: (url: string) => void;
+  onUploadComplete?: (media: ProjectMediaInput) => void;
   folder?: "profile" | "projects";
 };
 
@@ -19,6 +21,7 @@ export function ImageUploadField({
   label,
   value,
   onChange,
+  onUploadComplete,
   folder = "profile",
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,6 +75,13 @@ export function ImageUploadField({
       }
 
       onChange(presignData.publicUrl);
+      onUploadComplete?.({
+        publicUrl: presignData.publicUrl,
+        storagePath: presignData.path,
+        filename: file.name,
+        mimeType: file.type,
+        fileSize: file.size,
+      });
       toast.success(`${label} uploaded`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");

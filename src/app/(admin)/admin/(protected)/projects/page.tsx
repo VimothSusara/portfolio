@@ -36,7 +36,7 @@ export default async function AdminProjectsPage() {
         <CardHeader>
           <CardTitle>All projects</CardTitle>
           <CardDescription>
-            Published projects appear on the public site. Thumbnail uploads come in Phase 2d.
+            Manage projects, thumbnails, and gallery images for the public site.
           </CardDescription>
         </CardHeader>
         <CardContent>
