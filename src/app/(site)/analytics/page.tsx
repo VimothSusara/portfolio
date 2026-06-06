@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { ContributionGraph } from "@/components/site/contribution-graph";
 import { GithubRepositoriesSection } from "@/components/site/github-repositories-section";
+import { GithubRepositoryHistoryCharts } from "@/components/site/github-repository-history-charts";
+import { LinkedProjectHistoryCharts } from "@/components/site/linked-project-history-charts";
 import { OrganizationActivitySection } from "@/components/site/organization-activity-section";
 import { FadeIn } from "@/components/motion/fade-in";
 import { getGithubUsername } from "@/lib/github/client";
 import {
   getContributionCalendarCache,
   getLatestOrganizationActivity,
+  getLinkedProjectRepositoryHistories,
   getOrganizationRepositories,
+  getRepositoryHistorySeries,
   parseContributionCalendar,
 } from "@/lib/queries/github-analytics";
 
@@ -23,9 +27,16 @@ export default async function AnalyticsPage() {
   const username = cache?.username ?? getGithubUsername();
   const calendar = parseContributionCalendar(cache);
 
-  const [organizationActivity, organizationRepositories] = await Promise.all([
+  const [
+    organizationActivity,
+    organizationRepositories,
+    linkedProjectHistories,
+    repositoryHistory,
+  ] = await Promise.all([
     getLatestOrganizationActivity(),
     getOrganizationRepositories(username),
+    getLinkedProjectRepositoryHistories(),
+    getRepositoryHistorySeries(5),
   ]);
 
   return (
@@ -51,6 +62,18 @@ export default async function AnalyticsPage() {
           </p>
         )}
       </FadeIn>
+
+      {linkedProjectHistories.length > 0 && (
+        <FadeIn delay={0.12}>
+          <LinkedProjectHistoryCharts histories={linkedProjectHistories} />
+        </FadeIn>
+      )}
+
+      {repositoryHistory.length > 0 && (
+        <FadeIn delay={0.14}>
+          <GithubRepositoryHistoryCharts series={repositoryHistory} />
+        </FadeIn>
+      )}
 
       {organizationActivity.length > 0 && (
         <FadeIn delay={0.15}>

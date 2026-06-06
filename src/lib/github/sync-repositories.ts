@@ -45,6 +45,11 @@ async function upsertRepository(repo: RepoPayload) {
     },
   });
 
+  const linkedProject = await prisma.project.findFirst({
+    where: { githubRepositoryId: record.id },
+    select: { id: true },
+  });
+
   await prisma.githubSnapshot.create({
     data: {
       repositoryId: record.id,
@@ -52,6 +57,7 @@ async function upsertRepository(repo: RepoPayload) {
       forks: record.forks,
       openIssues: record.openIssues,
       commits: 0,
+      projectId: linkedProject?.id ?? null,
     },
   });
 

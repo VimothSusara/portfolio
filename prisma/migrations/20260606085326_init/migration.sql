@@ -69,6 +69,7 @@ CREATE TABLE "Project" (
     "lifecycle" "ProjectLifecycle" NOT NULL DEFAULT 'PLANNING',
     "type" "ProjectType" NOT NULL DEFAULT 'OTHER',
     "thumbnailImageId" TEXT,
+    "githubRepositoryId" TEXT,
     "startedAt" TIMESTAMP(3),
     "completedAt" TIMESTAMP(3),
     "publishedAt" TIMESTAMP(3),
@@ -254,6 +255,17 @@ CREATE TABLE "BlogPost" (
     CONSTRAINT "BlogPost_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "GithubContributionCache" (
+    "id" TEXT NOT NULL DEFAULT 'default',
+    "username" TEXT NOT NULL,
+    "totalContributions" INTEGER NOT NULL,
+    "weeks" JSONB NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "GithubContributionCache_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
@@ -340,6 +352,9 @@ CREATE INDEX "BlogPost_published_publishedAt_idx" ON "BlogPost"("published", "pu
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_thumbnailImageId_fkey" FOREIGN KEY ("thumbnailImageId") REFERENCES "Media"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Project" ADD CONSTRAINT "Project_githubRepositoryId_fkey" FOREIGN KEY ("githubRepositoryId") REFERENCES "GithubRepository"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProjectTechnology" ADD CONSTRAINT "ProjectTechnology_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;

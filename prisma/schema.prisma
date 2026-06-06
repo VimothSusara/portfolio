@@ -106,6 +106,7 @@ model Project {
   type             ProjectType      @default(OTHER)
 
   thumbnailImageId String?
+  githubRepositoryId String?
   startedAt        DateTime?
   completedAt      DateTime?
   publishedAt      DateTime?
@@ -116,6 +117,7 @@ model Project {
 
   technologies   ProjectTechnology[]
   thumbnailImage Media?              @relation("ProjectThumbnail", fields: [thumbnailImageId], references: [id], onDelete: SetNull)
+  githubRepository GithubRepository? @relation(fields: [githubRepositoryId], references: [id], onDelete: SetNull)
   images         ProjectImage[]
   snapshots      GithubSnapshot[]
   views          ProjectView[]
@@ -210,6 +212,7 @@ model GithubRepository {
   updatedAt  DateTime
 
   snapshots GithubSnapshot[]
+  projects  Project[]
 
   @@unique([ownerName, repoName])
 }

@@ -30,6 +30,10 @@ export const projectFormSchema = z.object({
   description: z.string().trim().min(20),
   githubUrl: optionalUrl,
   liveUrl: optionalUrl,
+  githubRepositoryId: z
+    .union([z.string().cuid(), z.literal("")])
+    .optional()
+    .transform((value) => value || null),
   featured: z.boolean(),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   lifecycle: z.enum(["PLANNING", "IN_PROGRESS", "COMPLETED"]),
@@ -41,3 +45,4 @@ export const projectFormSchema = z.object({
 });
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
+export type ProjectFormInput = z.input<typeof projectFormSchema>;

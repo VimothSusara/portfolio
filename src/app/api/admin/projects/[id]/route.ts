@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/auth/get-admin-user";
+import { applyProjectGithubRepositoryLink } from "@/lib/github/link-project-repository";
 import { syncProjectMedia } from "@/lib/media/project-media";
 import { prisma } from "@/lib/prisma";
 import { projectFormSchema } from "@/validations/project";
@@ -21,6 +22,7 @@ const projectInclude = {
 function revalidateProjectPaths(slug?: string) {
   revalidatePath("/");
   revalidatePath("/projects");
+  revalidatePath("/analytics");
   if (slug) revalidatePath(`/projects/${slug}`);
 }
 
@@ -82,6 +84,7 @@ export async function PATCH(request: Request, context: RouteContext) {
           description: data.description,
           githubUrl: data.githubUrl || null,
           liveUrl: data.liveUrl || null,
+          githubRepositoryId: data.githubRepositoryId,
           featured: data.featured,
           status: data.status,
           lifecycle: data.lifecycle,
@@ -97,6 +100,13 @@ export async function PATCH(request: Request, context: RouteContext) {
       });
 
       await syncProjectMedia(tx, id, data.thumbnail, data.gallery, admin.id);
+
+      await applyProjectGithubRepositoryLink(
+        tx,
+        id,
+        data.githubRepositoryId,
+        existing.githubRepositoryId,
+      );
 
       return tx.project.findUniqueOrThrow({
         where: { id },
