@@ -56,22 +56,22 @@ This project is more than a static portfolio. Content lives in **PostgreSQL** an
 
 | Home | Projects |
 |:----:|:--------:|
-| <img width="500" height="400" alt="Screenshot 2026-06-07 104653" src="https://github.com/user-attachments/assets/b5fc61ec-93c9-4656-9dce-48610bdf4279" /> | <img width="500" height="400" alt="Screenshot 2026-06-07 104818" src="https://github.com/user-attachments/assets/8763b5db-a352-41aa-9605-0b49aea001e1" />
+| <img width="600" height="350" alt="Screenshot 2026-06-07 104653" src="https://github.com/user-attachments/assets/b5fc61ec-93c9-4656-9dce-48610bdf4279" /> | <img width="600" height="350" alt="Screenshot 2026-06-07 104818" src="https://github.com/user-attachments/assets/8763b5db-a352-41aa-9605-0b49aea001e1" />
 
 | Analytics |
 |:---------:|
-| <img width="700" height="600" alt="Screenshot 2026-06-07 104840" src="https://github.com/user-attachments/assets/d08f10e3-4415-477e-886b-82866a87e4df" /> |
+| <img width="800" height="550" alt="Screenshot 2026-06-07 104840" src="https://github.com/user-attachments/assets/d08f10e3-4415-477e-886b-82866a87e4df" /> |
 
 ### Admin
 
 | Dashboard | Site traffic |
 |:---------:|:------------:|
-| <img width="500" height="400" alt="Screenshot 2026-06-07 104907" src="https://github.com/user-attachments/assets/56caaf6f-2c5c-4bc1-ac58-4edea162056c" /> | <img width="500" height="400" alt="Screenshot 2026-06-07 104934" src="https://github.com/user-attachments/assets/00df6234-cfdb-4f19-8c5b-fd05854b2b1f" />
+| <img width="600" height="350" alt="Screenshot 2026-06-07 104907" src="https://github.com/user-attachments/assets/56caaf6f-2c5c-4bc1-ac58-4edea162056c" /> | <img width="600" height="350" alt="Screenshot 2026-06-07 104934" src="https://github.com/user-attachments/assets/00df6234-cfdb-4f19-8c5b-fd05854b2b1f" />
 
 
 | GitHub analytics |
 |:----------------:|
-| <img width="700" height="600" alt="Screenshot 2026-06-07 105002" src="https://github.com/user-attachments/assets/0e289bbb-605c-43da-b03c-7780afd95c01" /> |
+| <img width="800" height="550" alt="Screenshot 2026-06-07 105002" src="https://github.com/user-attachments/assets/0e289bbb-605c-43da-b03c-7780afd95c01" /> |
 
 
 ## Getting started
