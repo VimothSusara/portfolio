@@ -2,7 +2,7 @@
 
 A full-stack developer portfolio built with **Next.js 16** — a public, data-driven site plus a secure admin CMS, GitHub activity sync, and site traffic analytics.
 
-![Home page](./docs/screenshots/home.svg)
+<img width="1667" height="970" alt="Screenshot 2026-06-07 104653" src="https://github.com/user-attachments/assets/efe5b260-798a-4c76-ab9c-400f5dcdea00" />
 
 ## Overview
 
@@ -56,62 +56,23 @@ This project is more than a static portfolio. Content lives in **PostgreSQL** an
 
 | Home | Projects |
 |:----:|:--------:|
-| ![Home](./docs/screenshots/home.svg) | ![Projects](./docs/screenshots/projects.svg) |
+| <img width="500" height="400" alt="Screenshot 2026-06-07 104653" src="https://github.com/user-attachments/assets/b5fc61ec-93c9-4656-9dce-48610bdf4279" /> | <img width="500" height="400" alt="Screenshot 2026-06-07 104818" src="https://github.com/user-attachments/assets/8763b5db-a352-41aa-9605-0b49aea001e1" />
 
 | Analytics |
 |:---------:|
-| ![Public analytics](./docs/screenshots/analytics-public.svg) |
+| <img width="700" height="600" alt="Screenshot 2026-06-07 104840" src="https://github.com/user-attachments/assets/d08f10e3-4415-477e-886b-82866a87e4df" /> |
 
 ### Admin
 
 | Dashboard | Site traffic |
 |:---------:|:------------:|
-| ![Admin dashboard](./docs/screenshots/admin-dashboard.svg) | ![Admin traffic](./docs/screenshots/admin-traffic.svg) |
+| <img width="500" height="400" alt="Screenshot 2026-06-07 104907" src="https://github.com/user-attachments/assets/56caaf6f-2c5c-4bc1-ac58-4edea162056c" /> | <img width="500" height="400" alt="Screenshot 2026-06-07 104934" src="https://github.com/user-attachments/assets/00df6234-cfdb-4f19-8c5b-fd05854b2b1f" />
+
 
 | GitHub analytics |
 |:----------------:|
-| ![GitHub analytics](./docs/screenshots/admin-github.svg) |
+| <img width="700" height="600" alt="Screenshot 2026-06-07 105002" src="https://github.com/user-attachments/assets/0e289bbb-605c-43da-b03c-7780afd95c01" /> |
 
-> Replace SVG placeholders with real PNG/WebP captures — see [`docs/screenshots/CAPTURE.md`](./docs/screenshots/CAPTURE.md).
-
-## Architecture
-
-```mermaid
-flowchart TB
-    subgraph public [Public site]
-        Pages[Server Components]
-        Tracker[Page view tracker]
-    end
-
-    subgraph admin [Admin panel]
-        CMS[CMS pages]
-        Traffic[Traffic dashboard]
-        GH[GitHub sync UI]
-    end
-
-    subgraph api [API routes]
-        Contact[/api/contact]
-        Analytics[/api/analytics/*]
-        Cron[/api/cron/github-sync]
-    end
-
-    subgraph data [Data layer]
-        DB[(PostgreSQL)]
-        Storage[(Supabase Storage)]
-        Redis[(Upstash Redis)]
-        GitHub[GitHub API]
-    end
-
-    Pages --> DB
-    Tracker --> Analytics --> DB
-    CMS --> DB
-    CMS --> Storage
-    Contact --> DB
-    Contact --> Redis
-    GH --> GitHub --> DB
-    Cron --> GitHub
-    Traffic --> DB
-```
 
 ## Getting started
 
@@ -140,8 +101,6 @@ npm run dev
 |-----|---------|
 | [http://localhost:3000](http://localhost:3000) | Public site |
 | [http://localhost:3000/admin/login](http://localhost:3000/admin/login) | Admin login |
-
-Default admin credentials come from `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env` (seed defaults: `admin` / `admin123` — **change before production**).
 
 ### Environment variables
 
