@@ -9,7 +9,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r bg-muted/20 md:flex md:flex-col">
+    <aside className="hidden h-full w-64 shrink-0 border-r bg-muted/20 md:flex md:flex-col">
       <div className="border-b px-6 py-5">
         <Link href="/admin" className="text-lg font-semibold tracking-tight">
           Admin

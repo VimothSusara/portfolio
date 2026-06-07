@@ -10,12 +10,14 @@ export default async function AdminProtectedLayout({
   const user = await requireAdmin();
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-full min-h-0 overflow-hidden">
       <AdminSidebar />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <AdminHeader username={user.username} />
-        <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+        <main className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 md:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

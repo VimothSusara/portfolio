@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Cpu,
+  Eye,
   FolderKanban,
   Images,
   LayoutDashboard,
@@ -22,5 +23,6 @@ export const adminNav: AdminNavItem[] = [
   { title: "Technologies", href: "/admin/technologies", icon: Cpu },
   { title: "Media", href: "/admin/media", icon: Images },
   { title: "Messages", href: "/admin/messages", icon: Mail },
-  { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  { title: "Traffic", href: "/admin/traffic", icon: Eye },
+  { title: "GitHub Analytics", href: "/admin/analytics", icon: BarChart3 },
 ];
