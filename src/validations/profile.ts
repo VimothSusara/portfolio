@@ -28,9 +28,3 @@ export const profileFormSchema = z.object({
 });
 
 export type ProfileFormValues = z.infer<typeof profileFormSchema>;
-
-export const uploadUrlSchema = z.object({
-  filename: z.string().trim().min(1).max(255),
-  contentType: z.string().trim().min(1),
-  folder: z.enum(["profile", "projects", "resumes"]),
-});

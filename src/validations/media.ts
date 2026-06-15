@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { UPLOAD_FOLDERS } from "@/lib/supabase/storage";
 
+export const uploadUrlSchema = z.object({
+  filename: z.string().trim().min(1).max(255),
+  contentType: z.string().trim().min(1),
+  folder: z.enum(UPLOAD_FOLDERS),
+});
+
 export const registerMediaSchema = z.object({
   filename: z.string().trim().min(1).max(255),
   storagePath: z.string().trim().min(1),

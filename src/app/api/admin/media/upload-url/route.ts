@@ -4,7 +4,7 @@ import {
   createPresignedUploadUrl,
   getMaxFileSizeForFolder,
 } from "@/lib/supabase/storage";
-import { uploadUrlSchema } from "@/validations/profile";
+import { uploadUrlSchema } from "@/validations/media";
 
 export async function POST(request: Request) {
   const admin = await getAdminUser();

@@ -1,4 +1,5 @@
 import {
+  Award,
   BarChart3,
   Cpu,
   Eye,
@@ -21,6 +22,7 @@ export const adminNav: AdminNavItem[] = [
   { title: "Profile", href: "/admin/profile", icon: User },
   { title: "Projects", href: "/admin/projects", icon: FolderKanban },
   { title: "Technologies", href: "/admin/technologies", icon: Cpu },
+  { title: "Credentials", href: "/admin/credentials", icon: Award },
   { title: "Media", href: "/admin/media", icon: Images },
   { title: "Messages", href: "/admin/messages", icon: Mail },
   { title: "Traffic", href: "/admin/traffic", icon: Eye },

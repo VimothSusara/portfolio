@@ -10,14 +10,14 @@ export type MediaUsageSnapshot = {
 
 export function getMediaFolder(storagePath: string): UploadFolder | "other" {
   const folder = storagePath.split("/")[0];
-  if (folder === "profile" || folder === "projects" || folder === "resumes") {
+  if (folder === "profile" || folder === "projects" || folder === "resumes" || folder === "credentials") {
     return folder;
   }
   return "other";
 }
 
 export async function getMediaUsageSnapshot(): Promise<MediaUsageSnapshot> {
-  const [profile, thumbnailProjects, projectImages, blogCovers, technologyIcons] =
+  const [profile, thumbnailProjects, projectImages, blogCovers, technologyIcons, credentialImages, credentialIcons] =
     await Promise.all([
       prisma.profile.findUnique({
         where: { id: PROFILE_ID },
@@ -33,6 +33,14 @@ export async function getMediaUsageSnapshot(): Promise<MediaUsageSnapshot> {
         select: { coverImageId: true },
       }),
       prisma.technology.findMany({
+        where: { iconUrl: { not: null } },
+        select: { iconUrl: true },
+      }),
+      prisma.credential.findMany({
+        where: { imageId: { not: null } },
+        select: { imageId: true },
+      }),
+      prisma.credential.findMany({
         where: { iconUrl: { not: null } },
         select: { iconUrl: true },
       }),
@@ -63,6 +71,14 @@ export async function getMediaUsageSnapshot(): Promise<MediaUsageSnapshot> {
 
   for (const technology of technologyIcons) {
     if (technology.iconUrl) usedPublicUrls.add(technology.iconUrl);
+  }
+
+  for (const credential of credentialImages) {
+    if (credential.imageId) usedMediaIds.add(credential.imageId);
+  }
+
+  for (const credential of credentialIcons) {
+    if (credential.iconUrl) usedPublicUrls.add(credential.iconUrl);
   }
 
   return { usedMediaIds, usedPublicUrls };
