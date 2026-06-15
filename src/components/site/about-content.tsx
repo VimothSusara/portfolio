@@ -8,8 +8,20 @@ import { GitHubIcon } from "@/components/icons/github-icon";
 import { LinkedInIcon } from "@/components/icons/linkedin-icon";
 import { Mail } from "lucide-react";
 import type { Profile } from "@/generated/prisma/client";
+import { CredentialsSection } from "@/components/site/credentials-section";
+import type { getPublishedCredentials } from "@/lib/queries/credentials";
 
-export function AboutContent({ profile }: { profile: Profile | null }) {
+type Credential = Awaited<ReturnType<typeof getPublishedCredentials>>[number];
+
+export function AboutContent({
+  profile,
+  credentials = [],
+  platformStats,
+}: {
+  profile: Profile | null;
+  credentials?: Credential[];
+  platformStats?: React.ReactNode;
+}) {
   if (!profile) {
     return (
       <section className="container mx-auto px-4 py-16">
@@ -70,6 +82,14 @@ export function AboutContent({ profile }: { profile: Profile | null }) {
         <h2>About me</h2>
         <p className="whitespace-pre-wrap">{profile.longBio}</p>
       </FadeIn>
+
+      {platformStats}
+
+      {credentials.length > 0 && (
+        <FadeIn className="mt-16" delay={0.12}>
+          <CredentialsSection credentials={credentials} />
+        </FadeIn>
+      )}
 
       <FadeIn className="mt-10 flex flex-wrap items-center gap-4" delay={0.15}>
         {profile.githubUrl && (

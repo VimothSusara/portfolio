@@ -104,8 +104,11 @@ export async function fetchMediaLibrary(options?: {
   return data.media as MediaPickerItem[];
 }
 
-export function mediaToProjectInput(media: MediaPickerItem): ProjectMediaInput {
+export function mediaToProjectInput(media: MediaPickerItem): ProjectMediaInput & {
+  id?: string;
+} {
   return {
+    id: media.id,
     publicUrl: media.publicUrl,
     storagePath: media.storagePath,
     filename: media.filename,

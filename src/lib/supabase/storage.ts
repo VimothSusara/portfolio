@@ -10,7 +10,7 @@ const ALLOWED_IMAGE_TYPES = new Set([
 
 const ALLOWED_RESUME_TYPES = new Set(["application/pdf"]);
 
-export const UPLOAD_FOLDERS = ["profile", "projects", "resumes"] as const;
+export const UPLOAD_FOLDERS = ["profile", "projects", "resumes", "credentials"] as const;
 export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 const FOLDER_CONFIG: Record<
@@ -31,6 +31,11 @@ const FOLDER_CONFIG: Record<
     allowedTypes: ALLOWED_RESUME_TYPES,
     maxSize: 10 * 1024 * 1024,
     defaultExtension: "pdf",
+  },
+  credentials: {
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+    maxSize: 5 * 1024 * 1024,
+    defaultExtension: "png",
   },
 };
 

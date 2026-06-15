@@ -47,6 +47,7 @@ enum SyncJobType {
   GITHUB_REPOSITORIES
   GITHUB_SNAPSHOTS
   ORGANIZATION_ACTIVITY
+  PLATFORM_BADGES
 }
 
 enum SyncJobStatus {
@@ -54,6 +55,18 @@ enum SyncJobStatus {
   RUNNING
   SUCCESS
   FAILED
+}
+
+enum CredentialType {
+  CERTIFICATION
+  BADGE
+  AWARD
+}
+
+enum CredentialSource {
+  MANUAL
+  LEETCODE
+  HACKERRANK
 }
 
 model User {
@@ -169,6 +182,7 @@ model Media {
   projectImages ProjectImage[]
   thumbnailFor  Project[]      @relation("ProjectThumbnail")
   coverFor      BlogPost[]     @relation("BlogPostCover")
+  credentialFor Credential[] @relation("CredentialImage")
 
   @@index([uploadedById])
 }
@@ -325,4 +339,40 @@ model GithubContributionCache {
   totalContributions Int
   weeks              Json
   updatedAt          DateTime @updatedAt
+}
+
+model Credential {
+  id            String           @id @default(cuid())
+  title         String
+  issuer        String?
+  description   String?          @db.Text
+  type          CredentialType
+  source        CredentialSource @default(MANUAL)
+  externalId    String?
+  credentialUrl String?
+  iconUrl       String?
+  imageId       String?
+  issuedAt      DateTime?
+  expiresAt     DateTime?
+  sortOrder     Int              @default(0)
+  featured      Boolean          @default(false)
+  published     Boolean          @default(true)
+  metadata      Json?
+  lastSyncedAt  DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  image Media? @relation("CredentialImage", fields: [imageId], references: [id], onDelete: SetNull)
+
+  @@unique([source, externalId])
+  @@index([type, published, sortOrder])
+  @@index([published, featured])
+}
+
+model PlatformProfileCache {
+  id        String           @id
+  platform  CredentialSource
+  username  String
+  stats     Json
+  updatedAt DateTime         @updatedAt
 }

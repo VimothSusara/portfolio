@@ -142,6 +142,33 @@ async function main() {
     },
   });
 
+  await prisma.credential.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        title: "AWS Cloud Practitioner",
+        issuer: "Amazon Web Services",
+        description: "Foundational cloud concepts, AWS services, and security.",
+        type: "CERTIFICATION",
+        source: "MANUAL",
+        sortOrder: 0,
+        featured: true,
+        published: true,
+        issuedAt: new Date("2024-06-01"),
+      },
+      {
+        title: "Problem Solver",
+        issuer: "LeetCode",
+        description: "Platform achievement badge.",
+        type: "BADGE",
+        source: "MANUAL",
+        sortOrder: 1,
+        featured: false,
+        published: true,
+      },
+    ],
+  });
+
   console.log("Seed completed.");
 }
 

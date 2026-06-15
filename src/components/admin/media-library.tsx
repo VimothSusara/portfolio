@@ -115,6 +115,7 @@ export function MediaLibrary({ initialMedia, stats }: MediaLibraryProps) {
             <SelectItem value="all">All folders</SelectItem>
             <SelectItem value="profile">Profile</SelectItem>
             <SelectItem value="projects">Projects</SelectItem>
+            <SelectItem value="credentials">Credentials</SelectItem>
             <SelectItem value="resumes">Resumes</SelectItem>
           </SelectContent>
         </Select>

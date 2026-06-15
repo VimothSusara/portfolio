@@ -17,7 +17,7 @@ type ImageUploadFieldProps = {
   value?: string;
   onChange: (url: string) => void;
   onUploadComplete?: (media: ProjectMediaInput) => void;
-  folder?: Extract<UploadFolder, "profile" | "projects">;
+  folder?: Extract<UploadFolder, "profile" | "projects" | "credentials">;
 };
 
 export function ImageUploadField({
